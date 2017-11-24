@@ -1,9 +1,11 @@
 use std::io;
 use std::io::BufRead;
+use board::Board;
+use tetrimino::Tetrimino;
+
 mod game;
 mod tetrimino;
-
-use tetrimino::Tetrimino;
+mod board;
 
 fn main() {
     //let mut input = Vec::new();

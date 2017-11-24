@@ -6,7 +6,7 @@ pub struct Tetrimino {
 
 impl Tetrimino {
     // Static methods for creating tetriminos
-    pub fn create(type_num: i32, position: (i32, i32)) -> Tetrimino {
+    pub fn init(type_num: i32, position: (i32, i32)) -> Tetrimino {
         match type_num {
             1 => Tetrimino::type_one(position),
             2 => Tetrimino::type_two(position),
