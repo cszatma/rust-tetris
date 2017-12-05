@@ -28,4 +28,8 @@ impl Board {
 
         return 0;
     }
+
+    pub fn values(&self) -> &Vec<Vec<String>> {
+        return &self.values;
+    }
 }
