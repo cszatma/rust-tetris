@@ -1,3 +1,6 @@
+use board::Board;
+use status::Status;
+
 pub struct Tetrimino {
     points: Vec<Vec<i32>>,
     position: (i32, i32),
@@ -59,5 +62,57 @@ impl Tetrimino {
 
     pub fn get_y_values(&self) -> Vec<i32> {
         return self.get_pos_on_board().iter().map(|point| point[1]).collect();
+    }
+
+    // Moves
+    pub fn perform_move(&mut self, board: &Board, move_str: String) -> Status {
+        match move_str.as_str() {
+            "l" | "r" => self.shift_horizontally(board, move_str),
+            "."       => self.shift_down(board),
+            "+"       => self.perform_drop(board),
+            _         => panic!("Invalid move: {}", move_str),
+        }
+    }
+
+    fn shift_horizontally(&mut self, board: &Board, direction: String) -> Status {
+        let shift_value: i32;
+        if direction == "l" { shift_value = -1; } else { shift_value = 1; }
+        let (x, y) = self.position;
+        self.position.0 += shift_value;
+        if self.piece_does_overlap(board) {
+            self.position.0 -= shift_value;
+            return Status::Failed;
+        }
+        return Status::Ok;
+    }
+
+    fn shift_down(&mut self, board: &Board) -> Status {
+        if self.is_on_bottom(board) { return Status::Placed; }
+        self.position.1 += 1;
+        if self.piece_does_overlap(board) {
+            self.position.1 -= 1;
+            return Status::Placed;
+        }
+        return Status::Ok;
+    }
+
+    fn perform_drop(&mut self, board: &Board) -> Status {
+        let status = self.shift_down(board);
+        if status == Status::Placed { return status; }
+        return self.perform_drop(board);
+    }
+
+    fn is_on_bottom(&self, board: &Board) -> bool {
+        return self.get_y_values().contains(&(board.num_of_cols() - 1));
+    }
+
+    fn piece_does_overlap(&self, board: &Board) -> bool {
+        return board.has_piece_at_positions(self.get_pos_on_board());
+    }
+
+    fn is_out_of_bounds(&self, board: &Board) -> bool {
+        let x_values = self.get_x_values();
+        let num_of_rows = board.num_of_rows();
+        return  x_values.iter().any(| x | x == &-1 || x == &num_of_rows);
     }
 }
